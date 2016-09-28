@@ -13,7 +13,7 @@ type ContravariantBindingResolver () =
             else
                 let genericType = service.GetGenericTypeDefinition ()
                 let genericArguments = genericType.GetGenericArguments ()
-                if genericArguments.Length = 1 || 
+                if Array.length genericArguments = 1 || 
                     GenericParameterAttributes.Contravariant
                     |> genericArguments.[0].GenericParameterAttributes.HasFlag
                     |> not
