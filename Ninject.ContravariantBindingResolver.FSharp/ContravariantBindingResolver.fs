@@ -20,12 +20,12 @@ type ContravariantBindingResolver () =
                 then Seq.empty
                 else
                     let argument = service.GetGenericArguments () |> Array.exactlyOne
-                    bindings
-                    |> Seq.map (fun (KeyValue (k, v)) -> 
-                        k, k.GetGenericArguments () |> Array.exactlyOne, v)
-                    |> Seq.filter (fun (key, genericArgument, _) -> 
-                        key.IsGenericType && 
-                        key.GetGenericTypeDefinition () = genericType &&
-                        genericArgument <> argument && 
-                        genericArgument.IsAssignableFrom argument)
-                    |> Seq.collect (fun (_, _, v) -> v)
+                    seq {
+                        for KeyValue (k, v) in bindings do
+                            let key, genericArgument = k, k.GetGenericArguments () |> Array.exactlyOne
+                            if key.IsGenericType && 
+                                key.GetGenericTypeDefinition () = genericType && 
+                                genericArgument <> argument && 
+                                genericArgument.IsAssignableFrom argument
+                            then yield! v
+                    }
